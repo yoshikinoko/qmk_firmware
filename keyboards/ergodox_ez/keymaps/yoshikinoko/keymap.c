@@ -8,6 +8,11 @@
 #define SYMB 2 // symbols
 #define SBTM 3 // shift bottom keys
 
+#define RGBLIGHT_COLOR_LAYER_0 0x22, 0x22, 0x22
+#define RGBLIGHT_COLOR_LAYER_1 0x22, 0x00, 0x00
+#define RGBLIGHT_COLOR_LAYER_2 0x00, 0x22, 0x00
+#define RGBLIGHT_COLOR_LAYER_3 0x00, 0x00, 0x22
+
 enum custom_keycodes {
   PLACEHOLDER = SAFE_RANGE, // can always be here
   EPRM,
