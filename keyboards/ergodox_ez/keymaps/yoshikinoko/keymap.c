@@ -150,7 +150,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* Keymap 3: Shift bottom key to home position
  *
  * ,--------------------------------------------------.           ,--------------------------------------------------.
- * |        |      |      |      |      |      |      |           |      |      |      |      |      |      |        |
+ * |        |      |      |      |      |      |      |           |      |      |      |      |      | SLEEP| Wake   |
  * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
  * |  PrScr | ZKHK | ROMA | KANA | HENK | MHEN |      |           |      | Prev | Play | Next | Mute | VolDn| VolUp  |
  * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
@@ -179,7 +179,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                     KC_TRNS,
                                   KC_TRNS, KC_TRNS, KC_TRNS,
     // right hand
-       KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+       KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_SYSTEM_SLEEP, KC_SYSTEM_WAKE,
        KC_TRNS,  KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD, KC_VOLU,
                  KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_DEL,
        KC_TRNS,  KC_TRNS, KC_TRNS, KC_MPRV, KC_MNXT, KC_TRNS, KC_TRNS,
