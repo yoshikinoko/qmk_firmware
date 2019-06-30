@@ -1,13 +1,13 @@
 #!/bin/bash
 
+source util/travis_push.sh
+
 set -o errexit -o nounset
 
-source util/travis_push.sh
 rev=$(git rev-parse --short HEAD)
+echo "Using git hash ${rev}"
 
-if ! [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]] ; then
-	exit 0
-fi
+if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]] ; then
 
 # convert to unix line-endings
 git checkout master
@@ -15,11 +15,12 @@ git diff --diff-filter=M --name-only -n 1 -z ${TRAVIS_COMMIT_RANGE} | xargs -0 d
 git diff --diff-filter=M --name-only -n 1 -z ${TRAVIS_COMMIT_RANGE} | xargs -0 git add
 git commit -m "convert to unix line-endings [skip ci]" && git push git@github.com:qmk/qmk_firmware.git master
 
-increment_version () {
-	declare -a part=( ${1//\./ } )
-	part[2]=$((part[2] + 1))
-	new="${part[*]}"
-	echo -e "${new// /.}"
+increment_version ()
+{
+  declare -a part=( ${1//\./ } )
+  part[2]=$((part[2] + 1))
+  new="${part[*]}"
+  echo -e "${new// /.}"
 }
 
 git diff --name-only -n 1 ${TRAVIS_COMMIT_RANGE}
@@ -54,12 +55,35 @@ if [[ "$TRAVIS_COMMIT_MESSAGE" != *"[skip build]"* ]] ; then
 	# rm -f compiled/*.hex
 
 	# ignore errors here
-	for file in ../qmk_firmware/keyboards/*/keymaps/*/*_default.hex; do mv -v "$file" "compiled/${file##*/}" || true; done
-	for file in ../qmk_firmware/keyboards/*/*/keymaps/*/*_default.hex; do mv -v "$file" "compiled/${file##*/}" || true; done
-	for file in ../qmk_firmware/keyboards/*/*/*/keymaps/*/*_default.hex; do mv -v "$file" "compiled/${file##*/}" || true; done
-	for file in ../qmk_firmware/keyboards/*/*/*/*/keymaps/*/*_default.hex; do mv -v "$file" "compiled/${file##*/}" || true; done
+	# In theory, this is more flexible, and will allow for additional expansion of additional types of files and other names
+	mv ../qmk_firmware/*_default.*{hex,bin} ./compiled/ || true
+
+	# get the list of keyboards
+	readarray -t keyboards < .keyboards
+
+	# replace / with _
+	keyboards=("${keyboards[@]//[\/]/_}")
+
+	# remove all binaries that don't belong to a keyboard in .keyboards
+	for file in "./compiled"/* ; do
+		match=0
+		for keyboard in "${keyboards[@]}" ; do
+			if [[ ${file##*/} = "${keyboard}_default.bin" ]] || [[ ${file##*/} = "${keyboard}_default.hex" ]]; then
+				match=1
+				break
+			fi
+		done
+		if [[ $match = 0 ]]; then
+			echo "Removing deprecated binary: $file"
+			rm "$file"
+		fi
+	done
+
 	bash _util/generate_keyboard_page.sh
 	git add -A
 	git commit -m "generated from qmk/qmk_firmware@${rev}"
 	git push git@github.com:qmk/qmk.fm.git
+
+fi
+
 fi
